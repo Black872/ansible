@@ -1,0 +1,20 @@
+
+[staging_servers:vars]
+ansible_user=dark
+ansible_sudo_pass=1234
+
+[staging_servers]
+linux1 ansible_host=10.202.2.64 
+#linux2 ansible_host=10.202.2.12 ansible_user=dark
+ 
+#[prod_servers]
+#linux3 ansible_host=10.202.3.30 ansible_user=dark
+
+#[windows_servers]
+#windows2016 ansible_host=172.31.4.90
+
+#[windows_server:vars]
+#ansible_user = myadmin
+#ansible_port = 5986
+#ansible_connection = winrm
+#ansible_winrm_server_cert_validation = ignore
