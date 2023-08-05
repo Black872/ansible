@@ -1,0 +1,32 @@
+---
+- name: Playbook for lesson 5 Loops
+  hosts: linux1
+  become: yes
+
+  tasks:
+    - block:
+        - name: Loop/With_items
+          debug: msg="Hello {{ item }}"
+          loop:
+            - "Vasya"
+            - "Petya"
+            - "Kolya"
+
+        - name: Loop Until example
+          shell: echo -n Z >> myfile.txt && cat myfile.txt
+          register: output
+          delay: 2
+          retries: 10
+          until: output.stdout.find("ZZZZ") == false
+
+        - name: Print output
+          debug:
+            var: output.stdout
+
+        - name: Install many packages
+          yum: name={{ item }} state=installed
+          loop:
+            - python3
+            - tree
+
+      when: ansible_os_family == "Debian"

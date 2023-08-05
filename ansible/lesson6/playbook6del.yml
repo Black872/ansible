@@ -1,0 +1,14 @@
+---
+- name: Delete files
+  hosts: linux1
+  become: yes
+
+  vars:
+    dest_folder: /var/www/html
+
+  tasks:
+    - block:
+        - name: Remove files in webserver
+          shell: rm {{ dest_folder }}/*
+
+      when: ansible_os_family == "Debian"

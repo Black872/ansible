@@ -1,0 +1,27 @@
+---
+- name: Uninstall apache
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Os family
+      debug: var=ansible_os_family
+    - block:
+        - name: Uninstall apache2
+          apt:
+            name: apache2
+            state: absent
+        - name: Autoremove apache
+          apt:
+            autoremove: yes
+      when: ansible_os_family == "Debian"
+
+    - block:
+        - name: Uninstall httpd
+          yum:
+            name: httpd
+            state: absent
+        - name: Autoremove httpd
+          yum:
+            autoremove: yes
+      when: ansible_os_family == "RedHat"

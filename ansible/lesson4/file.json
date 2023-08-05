@@ -1,0 +1,6 @@
+{
+    "ContainerFormat": "ova",
+    "DiskImageFormat": "VMDK",
+    "S3Bucket": "darkbox.export",
+    "S3Prefix": "vms/"
+}
