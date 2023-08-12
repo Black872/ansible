@@ -1,0 +1,7 @@
+---
+- name: Delete webserver
+  hosts: "{{ MYHOSTS }}"
+  become: yes
+
+  roles:
+    - { role: delete_apache, when: ansible_system == "Linux" }

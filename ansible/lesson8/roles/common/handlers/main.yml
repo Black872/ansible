@@ -1,0 +1,5 @@
+---
+# handlers file for main
+- name: Restart Apache
+  service: name=apache2 state=restarted
+  when: ansible_os_family == "Debian"
