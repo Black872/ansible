@@ -1,0 +1,3 @@
+---
+# defaults file for common
+source_item: ~/workspace/ansible/nginx/script.sh
