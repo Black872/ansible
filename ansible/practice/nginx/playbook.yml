@@ -43,7 +43,35 @@
 
   handlers:
     - name: Restart Nginx Service
+      debug:
+        msg: checking config first
+      changed_when: true
+      notify:
+        - check nginx configuration
+        - restart nginx when config ok
+
+    - name: reload nginx
+      debug:
+        msg: checking config first
+      changed_when: true
+      notify:
+        - check nginx configuration
+        - reload nginx when config ok
+
+    - name: check nginx configuration
+      command: "nginx -t"
+      register: nginx_conf_status
+      changed_when: "result.rc != 0"
+      always_run: yes
+
+    - name: restart nginx when config ok
       service:
         name: nginx
         state: restarted
+        enabled: yes
+
+    - name: reload nginx when config ok
+      service:
+        name: nginx
+        state: reloaded
         enabled: yes
