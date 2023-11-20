@@ -1,0 +1,49 @@
+---
+- name: Installation and configuration Playbook
+  hosts: DEV
+  become: true
+
+  tasks:
+    - block:
+        - name: Check OS Family
+          debug:
+            msg: "{{ ansible_os_family }}"
+        - name: Install Nginx
+          apt:
+            name: nginx
+            state: latest
+          notify: Restart Nginx Service
+        - name: Check nginx version
+          shell: nginx -v
+          register: nginx_deb_ver
+        - name: Debug nginx version
+          debug:
+            var: nginx_deb_ver.stderr_lines
+      when: ansible_os_family == "Debian"
+    - block:
+        - name: Check OS Family
+          debug:
+            msg: "{{ ansible_os_family }}"
+        - name: Install nginx
+          yum:
+            name: nginx
+            state: latest
+        - name: Start Nginx
+          service:
+            name: nginx
+            state: started
+          notify: Restart Nginx Service
+        - name: Check nginx version
+          shell: nginx -version
+          register: nginx_red_ver
+        - name: Debug nginx version
+          debug:
+            var: nginx_red_ver.stderr_lines
+      when: ansible_os_family == "RedHat"
+
+  handlers:
+    - name: Restart Nginx Service
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes

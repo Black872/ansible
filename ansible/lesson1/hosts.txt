@@ -1,5 +1,5 @@
 [STAGING_SERVERS]
-linux1 ansible_host=10.202.2.70 
+linux1 ansible_host=10.119.117.172 
  
 
 

@@ -1,7 +1,6 @@
 ---
 - name: Install nginx
   hosts: STAGING
-
   become: yes
 
   roles:

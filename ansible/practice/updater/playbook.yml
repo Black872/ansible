@@ -1,0 +1,20 @@
+---
+- name: Updater
+  hosts: all
+  become: true
+
+  tasks:
+    - name: ping servers
+      ping:
+
+    - name: Update all servers
+      apt:
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Upgrade all servers
+      apt:
+        upgrade: safe
+    - name: Autoremove old packages
+      apt:
+        autoremove: true
