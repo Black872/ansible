@@ -1,0 +1,15 @@
+---
+- name: Remove Prometheus
+  hosts: DEV
+  become: true
+
+  tasks:
+    - name: remove prom
+      apt:
+        name: prometheus
+        state: absent
+        update_cache: true
+        purge: true
+    - name: autoremove prom dependecy
+      apt:
+        autoremove: true
