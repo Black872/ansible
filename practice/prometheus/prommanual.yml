@@ -4,76 +4,131 @@
   become: yes
 
   tasks:
-    # Creating group&user
+    # Creating group&user for prometheus&node_exporter
+    # - block:
+    #     - name: Apt update
+    #       apt:
+    #         update_cache: true
+    #       # Check group list
+    #     - name: Get group
+    #       getent:
+    #         database: group
+    #       # Check users list
+    #     - name: Get User
+    #       getent:
+    #         database: passwd
+
+    #       # List of groups
+    #     - debug:
+    #         var: ansible_facts.getent_group
+    #       # List of users
+    #     - debug:
+    #         var: ansible_facts.getent_passwd
+
+    #       # Set prometheus group if not exist
+    #     - name: Set group prometheus
+    #       group:
+    #         name: prometheus
+    #         gid: 137
+    #       when:
+    #         - "'prometheus' not in ansible_facts.getent_group"
+    #         - "'137' not in item.value"
+    #       loop: "{{ ansible_facts.getent_group | dict2items }}" # dict2items перебирает цикл по словарю
+
+    #       # Set facts about prometheus user exists
+    #     - name: Set fact when prometheus user exists
+    #       set_fact:
+    #         user_exists: true
+    #       when: '"prometheus" in item.key'
+    #       loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+    #     - name: Set fact when prometheus user does not exists
+    #       set_fact:
+    #         user_exists: false
+    #       when: '"prometheus" not in item.key'
+    #       loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+
+    #       # Adding user prometheus when not exist
+    #     - name: Add User prometheus
+    #       user:
+    #         name: prometheus
+    #         comment: Prometheus user
+    #         uid: 130
+    #         group: prometheus
+    #         shell: /sbin/nologin
+    #         system: true
+    #         create_home: false
+    #       when:
+    #         - not user_exists
+    #         - "'130' not in item.value[1]"
+    #       loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+
+    #       # Set node_exporter group if not exist
+    #     - name: Set group node_exporter
+    #       group:
+    #         name: node_exporter
+    #         gid: 138
+    #       when:
+    #         - "'node_exporter' not in ansible_facts.getent_group"
+    #         - "'138' not in item.value"
+    #       loop: "{{ ansible_facts.getent_group | dict2items }}"
+
+    #       # Set facts about node_exporter user exists
+    #     - name: Set fact when node_exporter user exists
+    #       set_fact:
+    #         user_exists: true
+    #       when: '"node_exporter" in item.key'
+    #       loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+    #     - name: Set fact when node_exporter user does not exists
+    #       set_fact:
+    #         user_exists: false
+    #       when: '"node_exporter" not in item.key'
+    #       loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+
+    #       # Adding user node_exporter when not exist
+    #     - name: Add User node_exporter
+    #       user:
+    #         name: node_exporter
+    #         comment: Node_exporter user
+    #         uid: 131
+    #         group: node_exporter
+    #         shell: /sbin/nologin
+    #         system: true
+    #         create_home: false
+    #       when:
+    #         - not user_exists
+    #         - "'131' not in item.value[1]"
+    #       loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+    #   when: ansible_os_family == "Debian"
+
+    # Prepare folders and download prometheus&node_exporter
     - block:
-        - name: Apt update
-          apt:
-            update_cache: true
-          # Check group list
-        - name: Get group
-          getent:
-            database: group
-          # Check users list
-        - name: Get User
-          getent:
-            database: passwd
-          # List of groups
-        - debug:
-            var: ansible_facts.getent_group
-          # List of users
-        - debug:
-            var: ansible_facts.getent_passwd
-
-        - name: Set group prometheus
-          group:
-            name: prometheus
-            gid: 137
-          when:
-            - "'prometheus' not in ansible_facts.getent_group"
-            - "'137' not in item.value"
-          loop: "{{ ansible_facts.getent_group | dict2items }}" # dict2items перебирает цикл по словарю
-
-        - name: Set fact when prometheus user exists
-          set_fact:
-            user_exists: true
-          when: '"prometheus" in item.key'
-          loop: "{{ ansible_facts.getent_passwd | dict2items }}"
-        - name: Set fact when prometheus user does not exists
-          set_fact:
-            user_exists: false
-          when: '"prometheus" not in item.key'
-          loop: "{{ ansible_facts.getent_passwd | dict2items }}"
-
-        - name: Add User prometheus
-          user:
-            name: prometheus
-            comment: Prometheus user
-            uid: 130
-            group: prometheus
-            shell: /sbin/nologin
-            system: true
-            create_home: false
-          when:
-            - not user_exists
-            - "'130' not in item.value[1]"
-          loop: "{{ ansible_facts.getent_passwd | dict2items }}"
-
-      when: ansible_os_family == "Debian"
-      # Prepare folders and download prometheus
-    - block:
-        - name: Create folder /etc/
+        - name: Create Downloads folder
+          file:
+            path: /home/dark/Downloads
+            state: directory
+            owner: dark
+            mode: 0755
+        - name: Create folder for prometheus /etc/
           file:
             path: /etc/prometheus
             state: directory
             owner: prometheus
             group: prometheus
             mode: 0755
-        - name: Create folder /var/lib
+        - name: Create folder for prometheus /var/lib
           file:
             path: /var/lib/prometheus
             state: directory
             owner: prometheus
             group: prometheus
+            mode: 0755
+
+        - name: Create folder for node_exporter
+          file:
+            path: /etc/node_exporter
+            state: directory
+            owner: node_exporter
+            group: node_exporter
             mode: 0755
 
         # - name: Get prometheus from official site ?
@@ -91,10 +146,18 @@
             dest: /home/dark/Downloads
             owner: prometheus
             mode: 0755
+
+        - name: Unzip node_exporter
+          unarchive:
+            src: https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz
+            remote_src: true
+            dest: /home/dark/Downloads
+            owner: node_exporter
+            mode: 0755
       when: ansible_os_family == "Debian"
       # Moving files to their folders
     - block:
-        - name: Move Binary Files
+        - name: Move Prometheus Binary Files
           copy:
             src: "{{ item.src }}"
             dest: "{{ item.dest }}"
@@ -112,7 +175,7 @@
                 dest: "/usr/local/bin/promtool",
               }
 
-        - name: Move Config Files
+        - name: Move Prometheus Config Files
           copy:
             src: "{{ item.src }}"
             dest: "{{ item.dest }}"
@@ -129,12 +192,29 @@
                 src: "/home/dark/Downloads/prometheus-2.45.1.linux-amd64/console_libraries",
                 dest: "/etc/prometheus/console_libraries",
               }
+        - name: Send prometheus.yml to node /etc/prometheus
+          copy:
+            src: ./files/promfiles/prometheus.yml
+            dest: /etc/prometheus/prometheus.yml
+            owner: prometheus
+            group: prometheus
+            mode: 0755
+
+        - name: Move Node_exporter Binary File
+          copy:
+            src: "{{ item.src }}"
+            dest: "{{ item.dest }}"
+            owner: node_exporter
+            group: node_exporter
+            mode: 0755
+            remote_src: yes
+          loop:
             - {
-                src: "/home/dark/Downloads/prometheus-2.45.1.linux-amd64/prometheus.yml",
-                dest: "/etc/prometheus/prometheus.yml",
+                src: "/home/dark/Downloads/node_exporter-1.7.0.linux-amd64/node_exporter",
+                dest: "/usr/local/bin/node_exporter",
               }
       when: ansible_os_family == "Debian"
-      # Create Systemd service for prometheus and enable him
+      # Create Systemd service for prometheus&node_exporter and enable them
     - block:
         - name: Create prometheus.service file
           copy:
@@ -162,7 +242,7 @@
 
               [Install]
               WantedBy=multi-user.target
-        - name: Systemd daemon reload
+        - name: Reload systemd daemon and start prometheus
           systemd_service:
             daemon_reload: true
             name: prometheus
@@ -171,10 +251,45 @@
           notify:
             - Restart Prometheus Service
 
-      when: ansible_os_family == "Debian"
+        - name: Create node_exporter.service file
+          copy:
+            dest: /etc/systemd/system/node_exporter.service
+            owner: node_exporter
+            group: node_exporter
+            mode: 0755
+            content: |
+              [Unit]
+              Description=Node Exporter
+              Documentation=https://prometheus.io/docs/guides/node-exporter/
+              Wants=network-online.target
+              After=network-online.target
 
+              [Service]
+              User=node_exporter
+              Group=node_exporter
+              Restart=on-failure
+              Type=simple
+              ExecStart=/usr/local/bin/node_exporter \
+                --web.listen-address=:9200
+
+              [Install]
+              WantedBy=multi-user.target
+        - name: Reload systemd daemon and start node_exporter
+          systemd_service:
+            daemon_reload: true
+            name: node_exporter
+            state: started
+            enabled: true
+          notify: Restart Node_exporter Service
+        # The next step is to add rules for the firewall
+      when: ansible_os_family == "Debian"
   handlers:
     - name: Restart Prometheus Service
       systemd_service:
         name: prometheus
+        state: restarted
+
+    - name: Restart Node_exporter Service
+      systemd_service:
+        name: node_exporter
         state: restarted
