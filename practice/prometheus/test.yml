@@ -1,0 +1,88 @@
+---
+- name: Test
+  hosts: DEV
+  become: yes
+
+  tasks:
+    - name: Create folder /etc/
+      file:
+        path: /etc/prometheus
+        state: directory
+        mode: 0755
+    - name: Create folder /var/lib
+      file:
+        path: /var/lib/prometheus
+        state: directory
+        mode: 0755
+    # - name: Get prometheus from official site
+    #   get_url:
+    #     url: https://github.com/prometheus/prometheus/releases/download/v2.45.1/prometheus-2.45.1.linux-amd64.tar.gz
+    #     dest: /home/dark/Downloads
+    #     owner: prometheus
+    #     mode: 0755
+    #     checksum: sha256:48bdf3e6f0627a28ffb9efa15e6a7fee35bb320b98b060c901a856007cdf079d
+    # - name: Unzip prometheus
+    #   unarchive:
+    #     src: https://github.com/prometheus/prometheus/releases/download/v2.45.1/prometheus-2.45.1.linux-amd64.tar.gz
+    #     dest: /home/dark/Downloads
+    #     owner: prometheus
+    #     mode: 0755
+    #     remote_src: yes
+
+    # - name: Move Binary files
+    #   copy:
+    #     src: "{{ item.src }}"
+    #     dest: "{{ item.dest }}"
+    #     owner: prometheus
+    #     group: prometheus
+    #     mode: 0755
+    #     remote_src: yes
+    #   loop:
+    #     - {
+    #         src: "/home/dark/Downloads/prometheus-2.45.1.linux-amd64/prometheus",
+    #         dest: "/usr/local/bin/prometheus",
+    #       }
+    #     - {
+    #         src: "/home/dark/Downloads/prometheus-2.45.1.linux-amd64/promtool",
+    #         dest: "/usr/local/bin/promtool",
+    #       }
+    - name: Create prometheus.service file
+      copy:
+        dest: /etc/systemd/system/prometheus.service
+        owner: prometheus
+        group: prometheus
+        mode: 0755
+        content: |
+          [Unit]
+          Description=Prometheus
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          User=prometheus
+          Group=prometheus
+          Restart=on-failure
+          Type=simple
+
+          ExecStart=/usr/local/bin/prometheus \
+              --config.file /etc/prometheus/prometheus.yml \
+              --storage.tsdb.path /var/lib/prometheus/ \
+              --web.console.templates=/etc/prometheus/consoles \
+              --web.console.libraries=/etc/prometheus/console_libraries
+
+          [Install]
+          WantedBy=multi-user.target
+    - name: Systemd daemon reload
+      systemd_service:
+        daemon_reload: true
+        name: prometheus
+        state: started
+        enabled: true
+      notify:
+        - Restart Prometheus Service
+
+  handlers:
+    - name: Restart Prometheus Service
+      systemd_service:
+        name: prometheus
+        state: restarted

@@ -1,0 +1,36 @@
+---
+- name: Remove group and user
+  hosts: DEV
+  become: yes
+
+  tasks:
+    - block:
+        - name: remove user
+          user:
+            name: testuser
+            state: absent
+            remove: yes
+
+        - name: remove group
+          group:
+            name: testgroup
+            state: absent
+
+      when: ansible_os_family == "Debian"
+
+    # - block:
+    #     - name: add group
+    #       group:
+    #         name: testgroup
+    #         gid: 205
+
+    #     - name: add user
+    #       user:
+    #         name: testuser
+    #         uid: 205
+    #         group: testgroup
+    #         system: true
+    #         shell: /sbin/nologin
+    #         create_home: false
+
+    #   when: ansible_os_family == "Debian"
