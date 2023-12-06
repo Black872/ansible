@@ -1,2 +1,2 @@
 [DEV]
-linux1 ansible_host=10.119.116.166
+linux1 ansible_host=10.119.116.106

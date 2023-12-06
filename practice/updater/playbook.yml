@@ -18,3 +18,5 @@
     - name: Autoremove old packages
       apt:
         autoremove: true
+    - name: Successfull
+      msg: The nodes were successfully updated
