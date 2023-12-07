@@ -1,0 +1,17 @@
+---
+- name: Grafana init playbook
+  hosts: DEV
+  become: true
+
+  tasks:
+    - block:
+        - name: Add group Grafana
+          group:
+            name: grafana
+            gid: 1102
+        - name: Add user Grafana
+          user:
+            name: grafana
+            uid: 1101
+
+      when: ansible_os_family == "Debian""

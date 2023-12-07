@@ -99,7 +99,6 @@
             - "'131' not in item.value[1]"
           loop: "{{ ansible_facts.getent_passwd | dict2items }}"
       when: ansible_os_family == "Debian"
-
     # Prepare folders and download prometheus&node_exporter
     - block:
         - name: Create Downloads folder
