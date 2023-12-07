@@ -1,0 +1,20 @@
+---
+- name: This Playbook will do autobackup on controller node
+  hosts: localhost
+  become: false
+
+  vars:
+    ansible_src_directory: /home/dark/workspace/ansible
+    ansible_dest_directory: /home/dark/backup
+
+  tasks:
+    - name: Copy ansible backup directory
+      copy:
+        src: "{{ ansible_src_directory }}"
+        dest: "{{ ansible_dest_directory }}"
+
+    - name: Archive ansible backup directory
+      community.general.archive:
+        path: "{{ ansible_dest_directory }}/ansible"
+        dest: "{{ ansible_dest_directory }}/ansible.tgz"
+        remove: true
