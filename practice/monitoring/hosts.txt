@@ -1,0 +1,2 @@
+[DEV]
+Ubuntu1 ansible_host=10.119.117.219

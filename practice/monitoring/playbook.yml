@@ -1,0 +1,5 @@
+---
+- name: Playbook initialization monitoring system with docker
+  hosts: DEV
+  become: yes
+  
