@@ -283,6 +283,7 @@
           notify: Restart Node_exporter Service
         # The next step is to add rules for the firewall
       when: ansible_os_family == "Debian"
+
   handlers:
     - name: Restart Prometheus Service
       systemd_service:
@@ -293,3 +294,7 @@
       systemd_service:
         name: node_exporter
         state: restarted
+
+  # Import Grafana playbook
+- name: Import Grafana playbook and start play
+  import_playbook: grafana.yml
