@@ -138,6 +138,7 @@
         #     mode: 0755
         #     checksum: sha256:48bdf3e6f0627a28ffb9efa15e6a7fee35bb320b98b060c901a856007cdf079d
 
+        # Переделать этап скачивания с slave nodes на master node
         - name: Unzip prometheus
           unarchive:
             src: https://github.com/prometheus/prometheus/releases/download/v2.45.1/prometheus-2.45.1.linux-amd64.tar.gz
