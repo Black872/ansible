@@ -21,7 +21,7 @@ Launch step by step on Master Node:
 7. nano hosts.txt # add DNS/ip address of your slave node
 8. nano group_vars/DEV # change ansible_user and sudo pass on your user_name and sudo_pass_user_name
 9. ansible-playbook prommanual.yml # will start installing Prometheus and then Grafana on slave nodes in hosts.txt
-10. go on Grafana web http://slavenodeip:3000 and add first datasource Prometheus, then import dashboard with id 1860 Node Exporter Full
+10. go on Grafana web http://slavenodeip:3000 (login grafana pass admin) and add first datasource Prometheus, then import dashboard with id 1860 Node Exporter Full
 
 Config address:
 http://slavenodeip:3000 # Grafana | configure grafana config in /prometheus/files/graffiles/
