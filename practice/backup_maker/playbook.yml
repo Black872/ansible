@@ -8,6 +8,13 @@
     ansible_dest_directory: /home/dark/backup
 
   tasks:
+    - name: Create backup folder
+      file:
+        path: "{{ ansible_dest_directory }}"
+        state: directory
+        mode: 0755
+      run_once: true
+      
     - name: Copy ansible backup directory
       copy:
         src: "{{ ansible_src_directory }}"
