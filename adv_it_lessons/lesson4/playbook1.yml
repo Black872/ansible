@@ -1,0 +1,58 @@
+---
+- name: Playbook with conditions Block / When
+  hosts: all
+  become: yes
+
+  vars:
+    source_file: ./website/index.html
+    destination_file: /var/www/html
+
+  tasks:
+    - name: Check and print linux version
+      debug: var=ansible_os_family
+
+    - block: # Block for RedHat
+        - name: Install Apache WebServer for RedHat
+          yum:
+            name: httpd
+            state: latest
+
+        - name: Copy my Homepage to RedHat website
+          copy: src={{ source_file }} dest={{ destination_file }} mode=0555
+          notify: Restart RedHat Apache
+
+        - name: Start RedHat WebServer service
+          service:
+            name: httpd
+            state: started
+            enabled: yes
+
+      when: ansible_os_family == "RedHat"
+
+    - block: # Block for Debian
+        - name: Install Apache WebServer for Debian
+          apt:
+            name: apache2
+            state: latest
+
+        - name: Copy my Homepage to Debian website
+          copy: src={{ source_file }} dest={{ destination_file }} mode=0555
+          notify: Restart Debian Apache
+
+        - name: Start Debian WebServer service
+          service:
+            name: apache2
+            state: started
+            enabled: yes
+
+      when: ansible_os_family == "Debian"
+
+  handlers:
+    - name: Restart RedHat Apache
+      service:
+        name: httpd
+        state: restarted
+    - name: Restart Debian Apache
+      service:
+        name: apache2
+        state: restarted

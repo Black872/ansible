@@ -1,0 +1,8 @@
+---
+# tasks file for delete_apache
+- block:
+    - name: Clear html
+      shell: rm {{ dest_folder }}/*
+    - name: Delete apache
+      apt: name=apache2 state=absent
+  when: ansible_os_family == "Debian"

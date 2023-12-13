@@ -1,0 +1,5 @@
+[STAGING]
+linux1 ansible_host=10.202.2.66 #ubuntu
+
+#[PROD]
+#linux2 ansible_host=18.195.242.5 #amilinux

@@ -1,0 +1,19 @@
+---
+- name: Lesson 9 import, include
+  hosts: "{{ MYHOSTS }}"
+  become: yes
+
+  vars:
+    mytext: "hello from {{ owner }}"
+    yourtext: "Hello from {{ ansible_os_family }}"
+  #  roles:
+  #    - { role: common, when: ansible_system == "Linux" }
+  tasks:
+    - name: Ping test
+      ping:
+
+    - name: Create folders
+      include_tasks: createfolder.yml
+
+    - name: Create files
+      include_tasks: createfiles.yml

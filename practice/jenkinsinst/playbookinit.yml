@@ -1,0 +1,7 @@
+---
+- name: Install nginx
+  hosts: STAGING
+  become: yes
+
+  roles:
+    - { role: common, when: ansible_system == "Linux" }

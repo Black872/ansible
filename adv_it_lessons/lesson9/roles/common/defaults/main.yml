@@ -1,0 +1,4 @@
+---
+# defaults file for common
+mytext: "hello from {{ owner }}"
+yourtext: "Hello from {{ ansible_os_family }}"

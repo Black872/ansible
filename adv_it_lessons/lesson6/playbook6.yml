@@ -1,0 +1,40 @@
+---
+- name: Playbook6 jinja tmplate
+  hosts: linux1
+  become: yes
+
+  vars:
+    source_folder: ./websiteetc
+    destin_folder: /var/www/html
+
+  tasks:
+    - name: Check and print Linux Version
+      debug: var=ansible_os_family
+
+    - block:
+        - name: Install Apache
+          apt:
+            name: apache2
+            state: latest
+
+        - name: Start Apache
+          service: name=apache2 state=started enabled=yes
+      when: ansible_os_family == "Debian"
+
+    - name: Generate INDEX.HTML file
+      template: src={{ source_folder }}/index.j2 dest={{ destin_folder }}/index.html mode=0555
+      notify:
+        - Restart Apache
+
+    - name: Copy html file to webserver
+      copy: src={{ source_folder }}/{{ item }} dest={{ destin_folder }} mode=0555
+      loop:
+        - "file.txt"
+        - "file2.txt"
+        - "file3.txt"
+      notify:
+        - Restart Apache
+  handlers:
+    - name: Restart Apache
+      service: name=apache2 state=restarted
+      when: ansible_os_family == "Debian"

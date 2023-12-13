@@ -1,0 +1,106 @@
+---
+- name: Grafana init playbook
+  hosts: DEV
+  become: true
+
+  tasks:
+    # Install the required extra packages
+    - block:
+        - name: Apt update
+          apt:
+            update_cache: yes
+            upgrade: safe
+
+        - name: Install required packages
+          apt:
+            name:
+              - apt-transport-https
+              - software-properties-common
+            state: latest
+      when: ansible_os_family == "Debian"
+    # Add Grafana GPG key and Repository
+    - block:
+        - name: Create directory for Grafana GPG key
+          file:
+            path: /etc/apt/keyrings/
+            state: directory
+
+        - name: Add GPG key
+          get_url:
+            url: https://apt.grafana.com/gpg.key
+            dest: /etc/apt/keyrings/grafana.asc
+            mode: 0755
+            force: true
+
+        - name: Add Grafana repo
+          apt_repository:
+            filename: grafana-repo
+            repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main"
+
+      when: ansible_os_family == "Debian"
+    # Installing Grafana via apt
+    - block:
+        - name: Apt update
+          apt:
+            update_cache: yes
+
+        - name: Apt Install Grafana
+          apt:
+            name: grafana
+            state: latest
+          notify:
+            - Start Grafana Server
+            - Allow Grafana Port
+      when: ansible_os_family == "Debian"
+    # Creating Group and User for Grafana
+    - block:
+        - name: Add group Grafana
+          group:
+            name: grafana
+            gid: 1102
+
+        - name: Add user Grafana
+          user:
+            name: grafana
+            comment: User for Grafana tool
+            uid: 1101
+            group: grafana
+            shell: /bin/false
+      when: ansible_os_family == "Debian"
+    # Managing files to their repositories
+    - block:
+        - name: Copy datasource template to folder
+          copy:
+            src: ./files/graffiles/datasources/main.yml
+            dest: /usr/share/grafana/conf/provisioning/datasources/
+            owner: grafana
+            mode: 0755
+
+        - name: Copy dashboards template to folder
+          copy:
+            src: ./files/graffiles/dashboards/main.yml
+            dest: /usr/share/grafana/conf/provisioning/dashboards/
+            owner: grafana
+            mode: 0755
+
+        - name: Copy Node Exporter Full json to folder
+          copy:
+            src: /home/dark/workspace/ansible/practice/prometheus/files/graffiles/rfmoz/grafana-dashboards/node-exporter-full.json
+            dest: /data/grafana/dashboards/
+            owner: grafana
+            mode: 0755
+      when: ansible_os_family == "Debian"
+
+  handlers:
+    - name: Start Grafana Server
+      service:
+        name: grafana-server
+        state: started
+        enabled: true
+
+    - name: Allow Grafana Port
+      ufw:
+        rule: allow
+        port: 3000
+        proto: tcp
+        comment: The port of Grafana is open

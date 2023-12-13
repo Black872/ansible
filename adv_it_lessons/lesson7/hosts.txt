@@ -1,0 +1,2 @@
+[STAGING]
+linux1 ansible_host=10.202.2.69

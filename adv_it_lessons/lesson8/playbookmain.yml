@@ -1,0 +1,7 @@
+---
+- name: Playbook8 extra-vars
+  hosts: "{{ MYHOSTS }}"
+  become: yes
+
+  roles:
+    - { role: common, when: ansible_system == "Linux" }

@@ -1,0 +1,32 @@
+---
+# tasks file for common
+- name: Ping
+  ping:
+
+- name: Create folder1
+  file:
+    path: /home/secret/folder1
+    state: directory
+    mode: 0755
+
+- name: Create folder2
+  file:
+    path: /home/secret/folder2
+    state: directory
+    mode: 0755
+
+- name: Create file1
+  file:
+    dest: /home/secret/file1.txt
+    content: |
+      Text line1, in file1
+      Text line2, in file1
+      Text line3, in {{ mytext }}
+
+- name: Create file2
+  file:
+    dest: /home/secret/file2.txt
+    content: |
+      Text line1, in file2 
+      Text line2, in file2 
+      Text line3, in {{ yourtext }}

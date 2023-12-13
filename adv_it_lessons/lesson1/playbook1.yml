@@ -1,0 +1,8 @@
+---
+- name: Test connection to my server
+  hosts: STAGING_SERVERS
+  become: yes
+
+  tasks:
+    - name: Ping my servers
+      ping:

@@ -1,0 +1,54 @@
+---
+- name: Lesson 10 Delegation to
+  hosts: all
+  become: yes
+
+  vars:
+    mytext: "Hello from {{ owner }}"
+    boottext: "Hello from {{ ansible_os_family }}"
+    textsys: "Hi from {{ ansible_system }}"
+
+  tasks:
+    - name: Ping server
+      ping:
+
+    - name: Unregister Server from loadbalancer
+      shell: echo This Server {{ inventory_hostname }} was deregistered from our load balancer, node name is {{ ansible_nodename }} >> /home/log.txt
+      delegate_to: 127.0.0.1
+
+    - name: Update Database
+      shell: echo Database Updating..
+      register: fill
+      run_once: true
+      delegate_to: linux1
+
+    - debug:
+        var: fill
+
+    - name: Create file1
+      copy:
+        dest: /home/secret/file1.txt
+        content: |
+          File 1
+          On Boot {{ boottext }}
+          On English {{ mytext }}
+      delegate_to: linux1
+
+    - name: Create file2
+      copy:
+        dest: /home/secret/file2.txt
+        content: |
+          File 2
+          On start {{ textsys }}
+      delegate_to: linux1
+
+    # - name: Reboot my server
+    #   reboot:
+
+    # - name: Wait till my server will come up online
+    #   wait_for:
+    #     host: "{{ inventory_hostname }}"
+    #     state: started
+    #     delay: 5
+    #     timeout: 40
+    #   delegate_to: 127.0.0.1
