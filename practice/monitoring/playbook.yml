@@ -3,4 +3,6 @@
   hosts: DEV
   become: true
 
+  roles:
+    - { role: docker, when: ansible_system == "Linux"  }
   
