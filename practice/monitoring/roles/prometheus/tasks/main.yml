@@ -1,2 +1,23 @@
 ---
 # tasks file for prometheus
+#Block docker-compose build
+- block:
+    - name: Create folder for Prometheus docker-compose files
+      file:
+        path: /home/dark/monitoring
+        state: directory
+        mode: 0755
+
+    - name: Move Prometheus docker-compose init to slave
+      copy:
+        src: ./*
+        dest: /home/dark/monitoring
+        mode: 0755
+
+    - name: Docker Compose build
+      community.docker.docker_compose:
+        project_src: /home/dark/monitoring
+        build: true
+        recreate: never
+
+  when: ansible_os_family == "Debian"

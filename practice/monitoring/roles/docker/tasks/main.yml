@@ -1,46 +1,44 @@
 ---
 # tasks file for docker
-#Apt update and install required packages
+# Apt update and install required packages
 - block:
     - name: Apt update
       apt:
         update_cache: yes
         upgrade: safe
-      
+
     - name: Install required packages
       apt:
         name: "{{ docker_req_pack }}"
         state: latest
   when: ansible_os_family == "Debian"
-#Add docker GPG key for Apt manager
-- block:
-    - name: Create directory for gpg key
-      file:
-        path: /etc/apt/keyrings
-        state: directory
-    
-    - name: Install docker GPG key
-      get_url:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        dest: /etc/apt/keyrings/docker.asc
-        mode: a+r
-        force: true
-      
-    - name: Add docker repository to Apt soruces 
-      apt_repository:
-        filename: docker-repo 
-        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu jammy stable"
-        mode: a+r
+# #Add docker GPG key for Apt manager does not work
+# - block:
+#     - name: Create directory for gpg key
+#       file:
+#         path: /etc/apt/keyrings
+#         state: directory
+#         mode: 0755
 
+#     - name: Install docker GPG key
+#       apt_key:
+#         url: https://download.docker.com/linux/ubuntu/gpg
+#         state: present
 
-  when: ansible_os_family == "Debian"
+#     - name: Add docker repository to Apt soruces
+#       apt_repository:
+#         filename: docker-repo
+#         repo: "deb https://download.docker.com/linux/ubuntu jammy stable"
+#         mode: a+r
+
+#   when: ansible_os_family == "Debian"
 # Install docker packages
 - block:
     - name: Install docker packages
-      apt: 
+      apt:
         name: "{{ docker_pack }}"
         state: latest
-      
+
     - name: Check docker version
       command:
         cmd: "docker -v"

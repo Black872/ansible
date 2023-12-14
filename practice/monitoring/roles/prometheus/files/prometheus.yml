@@ -1,0 +1,22 @@
+global:
+  scrape_interval: "1m"
+
+scrape_configs:
+  - job_name: "prometheus"
+    metrics_path: /metrics
+    scrape_interval: 1m
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "node"
+    static_configs:
+      - targets: ["localhost:9100"]
+
+remote_write:
+  - url: https://prometheus-prod-24-prod-eu-west-2.grafana.net/api/prom
+    remote_timeout: "30s"
+    send_exemplars: false
+    follow_redirects: true
+    basic_auth:
+      username: "1320843"
+      password: glc_eyJvIjoiMTAwNTg2NCIsIm4iOiJzdGFjay04MDY0MzAtaG0td3JpdGUtd29ya3Rva2VuIiwiayI6IkxDRVBRMUFESTdOdnIwNzgyd0I3MTg4YiIsIm0iOnsiciI6InByb2QtZXUtd2VzdC0yIn19
