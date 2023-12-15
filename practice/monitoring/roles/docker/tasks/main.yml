@@ -13,31 +13,29 @@
         state: latest
   when: ansible_os_family == "Debian"
 # #Add docker GPG key for Apt manager does not work
-# - block:
-#     - name: Create directory for gpg key
-#       file:
-#         path: /etc/apt/keyrings
-#         state: directory
-#         mode: 0755
+- block:
+    - name: Install docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
 
-#     - name: Install docker GPG key
-#       apt_key:
-#         url: https://download.docker.com/linux/ubuntu/gpg
-#         state: present
+    - name: Add docker repository to Apt soruces
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu mantic stable"
+        state: present
 
-#     - name: Add docker repository to Apt soruces
-#       apt_repository:
-#         filename: docker-repo
-#         repo: "deb https://download.docker.com/linux/ubuntu jammy stable"
-#         mode: a+r
-
-#   when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian"
 # Install docker packages
 - block:
     - name: Install docker packages
       apt:
         name: "{{ docker_pack }}"
         state: latest
+
+    - name: add admin user to docker group
+      user:
+        name: dark
+        group: docker
 
     - name: Check docker version
       command:

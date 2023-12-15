@@ -1,6 +1,7 @@
 ---
 # vars file for docker
-docker_req_pack: 
+docker_req_pack:
+  - apt-transport-https
   - ca-certificates
   - curl
 
