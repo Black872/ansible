@@ -1,0 +1,4 @@
+[DEV]
+virtubuntu1 ansible_host=10.119.117.169
+#virtubuntu2 ansible_host=192.168.1.55
+#virtubuntu3 ansible_host=192.168.0.110

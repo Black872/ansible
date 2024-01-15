@@ -1,0 +1,4 @@
+---
+ansible_user: dark
+ansible_sudo_pass: 1234
+
