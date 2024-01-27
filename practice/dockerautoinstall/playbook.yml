@@ -14,6 +14,7 @@
           - ca-certificates
           - curl
           - gnupg
+          - tree
 
     - name: adding gpg key
       get_url:
