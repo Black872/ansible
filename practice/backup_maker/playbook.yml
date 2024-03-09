@@ -3,9 +3,8 @@
   hosts: localhost
   become: false
 
-  vars:
-    ansible_src_directory: /home/dark/workspace/ansible
-    ansible_dest_directory: /home/dark/backup
+  vars_files:
+    - ./group_vars/var.yml
 
   tasks:
     - name: Create backup folder
@@ -14,7 +13,7 @@
         state: directory
         mode: 0755
       run_once: true
-      
+
     - name: Copy ansible backup directory
       copy:
         src: "{{ ansible_src_directory }}"
@@ -25,3 +24,7 @@
         path: "{{ ansible_dest_directory }}/ansible"
         dest: "{{ ansible_dest_directory }}/ansible.tgz"
         remove: true
+
+    - name: Copy ansible archive to googledrive
+      shell:
+        cmd: 'cp -r "{{ ansible_dest_directory }}/ansible.tgz" "{{ googledrive_dest_directory }}"'
