@@ -14,17 +14,17 @@
         mode: 0755
       run_once: true
 
-    - name: Copy ansible backup directory
+    - name: Copy workspace to backup directory
       copy:
-        src: "{{ ansible_src_directory }}"
+        src: "{{ workspace_src_directory }}"
         dest: "{{ backup_dest_directory }}"
 
-    - name: Archive ansible backup directory
+    - name: Archive workspace backup directory
       community.general.archive:
-        path: "{{ backup_dest_directory }}/ansible"
-        dest: "{{ backup_dest_directory }}/ansible.tgz"
+        path: "{{ backup_dest_directory }}/workspace"
+        dest: "{{ backup_dest_directory }}/workspace.tgz"
         remove: true
 
-    - name: Copy ansible archive to googledrive
+    - name: Copy workspace archive to googledrive
       shell:
-        cmd: 'cp -r "{{ backup_dest_directory }}/ansible.tgz" "{{ googledrive_dest_directory }}"'
+        cmd: 'cp -r "{{ backup_dest_directory }}/workspace.tgz" "{{ workspace_googledrive_dest_directory }}"'
